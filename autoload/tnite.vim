@@ -8,7 +8,11 @@ let g:tnite#actions = {
 
 function! tnite#start(cmds, action, option) abort
   let buf_num = 0
-  let buf_num = term_start(a:cmds, {"exit_cb": { -> s:callback(buf_num, a:action, a:option) }})
+  if has('nvim')
+    let buf_num = termopen(a:cmds, {"on_exit": { -> s:callback(buf_num, a:action, a:option) } })
+  else
+    let buf_num = term_start(a:cmds, {"exit_cb": { -> s:callback(buf_num, a:action, a:option) }})
+  endif
   if buf_num == 0
     echom 'failed to open terminal'
     return
